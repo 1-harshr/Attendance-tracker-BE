@@ -21,8 +21,10 @@ public class DataInitializationService implements CommandLineRunner {
         if (employeeRepository.count() == 0) {
             Employee testEmployee = new Employee();
             testEmployee.setEmployeeId("EMP001");
-            testEmployee.setName("Test Employee");
+            testEmployee.setFirstName("Test");
+            testEmployee.setLastName("Employee");
             testEmployee.setEmail("test@company.com");
+            testEmployee.setPhone("1234567890");
             testEmployee.setPasswordHash(passwordEncoder.encode("password123"));
             testEmployee.setRole(Employee.Role.EMPLOYEE);
             testEmployee.setActive(true);
@@ -30,8 +32,10 @@ public class DataInitializationService implements CommandLineRunner {
 
             Employee testAdmin = new Employee();
             testAdmin.setEmployeeId("ADMIN001");
-            testAdmin.setName("Test Admin");
+            testAdmin.setFirstName("Test");
+            testAdmin.setLastName("Admin");
             testAdmin.setEmail("admin@company.com");
+            testAdmin.setPhone("0987654321");
             testAdmin.setPasswordHash(passwordEncoder.encode("admin123"));
             testAdmin.setRole(Employee.Role.ADMIN);
             testAdmin.setActive(true);

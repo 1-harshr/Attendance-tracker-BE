@@ -15,7 +15,7 @@ public class UserInfo {
     public UserInfo(Employee employee) {
         this.id = employee.getId();
         this.employeeId = employee.getEmployeeId();
-        this.name = employee.getName();
+        this.name = employee.getFirstName() + (employee.getLastName() != null ? " " + employee.getLastName() : "");
         this.email = employee.getEmail();
         this.role = employee.getRole().name();
     }

@@ -15,10 +15,17 @@ public class Employee {
     private String employeeId;
     
     @Column(nullable = false)
-    private String name;
+    private String firstName;
+    
+    private String lastName;
+    
+    @Column(unique = true)
+    private String email;
     
     @Column(unique = true, nullable = false)
-    private String email;
+    private String phone;
+    
+    private String address;
     
     @Column(nullable = false)
     private String passwordHash;
@@ -57,11 +64,20 @@ public class Employee {
     public String getEmployeeId() { return employeeId; }
     public void setEmployeeId(String employeeId) { this.employeeId = employeeId; }
     
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
+    public String getFirstName() { return firstName; }
+    public void setFirstName(String firstName) { this.firstName = firstName; }
+    
+    public String getLastName() { return lastName; }
+    public void setLastName(String lastName) { this.lastName = lastName; }
     
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
+    
+    public String getPhone() { return phone; }
+    public void setPhone(String phone) { this.phone = phone; }
+    
+    public String getAddress() { return address; }
+    public void setAddress(String address) { this.address = address; }
     
     public String getPasswordHash() { return passwordHash; }
     public void setPasswordHash(String passwordHash) { this.passwordHash = passwordHash; }
