@@ -1,7 +1,6 @@
 package com.example.attendance_tracker.attendace_tracker.controller;
 
-import com.example.attendance_tracker.attendace_tracker.dto.employee.CreateEmployeeRequest;
-import com.example.attendance_tracker.attendace_tracker.dto.employee.CreateEmployeeResponse;
+import com.example.attendance_tracker.attendace_tracker.dto.employee.*;
 import com.example.attendance_tracker.attendace_tracker.dto.common.ApiResponse;
 import com.example.attendance_tracker.attendace_tracker.service.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,8 +16,9 @@ public class EmployeeController {
     private EmployeeService employeeService;
     
     @GetMapping
-    public ResponseEntity<?> getAllEmployees() {
-        return ResponseEntity.ok("Get all employees - admin only");
+    public ResponseEntity<ApiResponse<EmployeeListResponse>> getAllEmployees() {
+        ApiResponse<EmployeeListResponse> response = employeeService.getAllEmployees();
+        return ResponseEntity.ok(response);
     }
     
     @PostMapping
@@ -33,17 +33,35 @@ public class EmployeeController {
     }
     
     @GetMapping("/{id}")
-    public ResponseEntity<?> getEmployee(@PathVariable Long id) {
-        return ResponseEntity.ok("Get employee by ID");
+    public ResponseEntity<ApiResponse<EmployeeResponse>> getEmployee(@PathVariable Long id) {
+        ApiResponse<EmployeeResponse> response = employeeService.getEmployeeById(id);
+        
+        if (response.isSuccess()) {
+            return ResponseEntity.ok(response);
+        } else {
+            return ResponseEntity.status(404).body(response);
+        }
     }
     
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateEmployee(@PathVariable Long id, @RequestBody Object employeeRequest) {
-        return ResponseEntity.ok("Update employee - admin only");
+    public ResponseEntity<ApiResponse<UpdateEmployeeResponse>> updateEmployee(@PathVariable Long id, @Valid @RequestBody UpdateEmployeeRequest request) {
+        ApiResponse<UpdateEmployeeResponse> response = employeeService.updateEmployee(id, request);
+        
+        if (response.isSuccess()) {
+            return ResponseEntity.ok(response);
+        } else {
+            return ResponseEntity.status(400).body(response);
+        }
     }
     
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteEmployee(@PathVariable Long id) {
-        return ResponseEntity.ok("Deactivate employee - admin only");
+    public ResponseEntity<ApiResponse<DeleteEmployeeResponse>> deleteEmployee(@PathVariable Long id) {
+        ApiResponse<DeleteEmployeeResponse> response = employeeService.deleteEmployee(id);
+        
+        if (response.isSuccess()) {
+            return ResponseEntity.ok(response);
+        } else {
+            return ResponseEntity.status(400).body(response);
+        }
     }
 } 

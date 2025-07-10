@@ -1,7 +1,6 @@
 package com.example.attendance_tracker.attendace_tracker.service;
 
-import com.example.attendance_tracker.attendace_tracker.dto.employee.CreateEmployeeRequest;
-import com.example.attendance_tracker.attendace_tracker.dto.employee.CreateEmployeeResponse;
+import com.example.attendance_tracker.attendace_tracker.dto.employee.*;
 import com.example.attendance_tracker.attendace_tracker.dto.common.ApiResponse;
 import com.example.attendance_tracker.attendace_tracker.entity.Employee;
 import com.example.attendance_tracker.attendace_tracker.repository.EmployeeRepository;
@@ -10,7 +9,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class EmployeeService {
@@ -62,6 +63,129 @@ public class EmployeeService {
 
         } catch (Exception e) {
             return ApiResponse.error("INTERNAL_ERROR", "An error occurred while creating employee");
+        }
+    }
+
+    public ApiResponse<EmployeeListResponse> getAllEmployees() {
+        try {
+            List<Employee> employees = employeeRepository.findByActiveTrueOrderByCreatedAtDesc();
+            List<EmployeeResponse> employeeResponses = employees.stream()
+                    .map(EmployeeResponse::new)
+                    .collect(Collectors.toList());
+            
+            EmployeeListResponse response = new EmployeeListResponse(employeeResponses, employees.size());
+            return ApiResponse.success(response);
+        } catch (Exception e) {
+            return ApiResponse.error("INTERNAL_ERROR", "An error occurred while fetching employees");
+        }
+    }
+    
+    public ApiResponse<EmployeeResponse> getEmployeeById(Long id) {
+        try {
+            Optional<Employee> employee = employeeRepository.findById(id);
+            
+            if (employee.isEmpty()) {
+                return ApiResponse.error("EMPLOYEE_NOT_FOUND", "Employee not found");
+            }
+            
+            if (!employee.get().getActive()) {
+                return ApiResponse.error("EMPLOYEE_INACTIVE", "Employee is inactive");
+            }
+            
+            EmployeeResponse response = new EmployeeResponse(employee.get());
+            return ApiResponse.success(response);
+        } catch (Exception e) {
+            return ApiResponse.error("INTERNAL_ERROR", "An error occurred while fetching employee");
+        }
+    }
+    
+    public ApiResponse<UpdateEmployeeResponse> updateEmployee(Long id, UpdateEmployeeRequest request) {
+        try {
+            Optional<Employee> optionalEmployee = employeeRepository.findById(id);
+            
+            if (optionalEmployee.isEmpty()) {
+                return ApiResponse.error("EMPLOYEE_NOT_FOUND", "Employee not found");
+            }
+            
+            Employee employee = optionalEmployee.get();
+            
+            if (StringUtils.hasText(request.getPhone()) && 
+                employeeRepository.existsByPhoneAndIdNot(request.getPhone(), id)) {
+                return ApiResponse.error("DUPLICATE_PHONE", "Phone number already exists");
+            }
+            
+            if (StringUtils.hasText(request.getEmail()) && 
+                employeeRepository.existsByEmailAndIdNot(request.getEmail(), id)) {
+                return ApiResponse.error("DUPLICATE_EMAIL", "Email address already exists");
+            }
+            
+            if (StringUtils.hasText(request.getFirstName())) {
+                employee.setFirstName(request.getFirstName());
+            }
+            if (request.getLastName() != null) {
+                employee.setLastName(request.getLastName());
+            }
+            if (request.getEmail() != null) {
+                employee.setEmail(request.getEmail());
+            }
+            if (StringUtils.hasText(request.getPhone())) {
+                employee.setPhone(request.getPhone());
+            }
+            if (request.getAddress() != null) {
+                employee.setAddress(request.getAddress());
+            }
+            if (StringUtils.hasText(request.getPassword())) {
+                employee.setPasswordHash(passwordEncoder.encode(request.getPassword()));
+            }
+            if (StringUtils.hasText(request.getRole())) {
+                try {
+                    employee.setRole(Employee.Role.valueOf(request.getRole().toUpperCase()));
+                } catch (IllegalArgumentException e) {
+                    return ApiResponse.error("INVALID_ROLE", "Role must be EMPLOYEE or ADMIN");
+                }
+            }
+            if (request.getActive() != null) {
+                employee.setActive(request.getActive());
+            }
+            
+            Employee savedEmployee = employeeRepository.save(employee);
+            
+            UpdateEmployeeResponse response = new UpdateEmployeeResponse(
+                "Employee updated successfully", 
+                savedEmployee.getEmployeeId()
+            );
+            
+            return ApiResponse.success(response);
+        } catch (Exception e) {
+            return ApiResponse.error("INTERNAL_ERROR", "An error occurred while updating employee");
+        }
+    }
+    
+    public ApiResponse<DeleteEmployeeResponse> deleteEmployee(Long id) {
+        try {
+            Optional<Employee> optionalEmployee = employeeRepository.findById(id);
+            
+            if (optionalEmployee.isEmpty()) {
+                return ApiResponse.error("EMPLOYEE_NOT_FOUND", "Employee not found");
+            }
+            
+            Employee employee = optionalEmployee.get();
+            
+            if (!employee.getActive()) {
+                return ApiResponse.error("EMPLOYEE_ALREADY_INACTIVE", "Employee is already inactive");
+            }
+            
+            employee.setActive(false);
+            Employee savedEmployee = employeeRepository.save(employee);
+            
+            DeleteEmployeeResponse response = new DeleteEmployeeResponse(
+                "Employee deactivated successfully", 
+                savedEmployee.getEmployeeId()
+            );
+            
+            return ApiResponse.success(response);
+        } catch (Exception e) {
+            return ApiResponse.error("INTERNAL_ERROR", "An error occurred while deactivating employee");
         }
     }
 
