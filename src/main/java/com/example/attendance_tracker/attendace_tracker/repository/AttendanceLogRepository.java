@@ -12,8 +12,21 @@ import java.util.Optional;
 
 @Repository
 public interface AttendanceLogRepository extends JpaRepository<AttendanceLog, Long> {
+    
     List<AttendanceLog> findByEmployeeAndCheckInTimeBetween(Employee employee, LocalDateTime startDate, LocalDateTime endDate);
     List<AttendanceLog> findByCheckInTimeBetween(LocalDateTime startDate, LocalDateTime endDate);
+    
+    List<AttendanceLog> findByEmployeeAndCheckInTimeBetweenOrderByCheckInTimeDesc(Employee employee, LocalDateTime startDate, LocalDateTime endDate);
+    List<AttendanceLog> findByEmployeeAndCheckInTimeGreaterThanEqualOrderByCheckInTimeDesc(Employee employee, LocalDateTime startDate);
+    List<AttendanceLog> findByEmployeeAndCheckInTimeLessThanEqualOrderByCheckInTimeDesc(Employee employee, LocalDateTime endDate);
+    List<AttendanceLog> findByEmployeeOrderByCheckInTimeDesc(Employee employee);
+    
+    List<AttendanceLog> findByCheckInTimeBetweenOrderByCheckInTimeDesc(LocalDateTime startDate, LocalDateTime endDate);
+    List<AttendanceLog> findByCheckInTimeGreaterThanEqualOrderByCheckInTimeDesc(LocalDateTime startDate);
+    List<AttendanceLog> findByCheckInTimeLessThanEqualOrderByCheckInTimeDesc(LocalDateTime endDate);
+    List<AttendanceLog> findAllByOrderByCheckInTimeDesc();
+    
+    Optional<AttendanceLog> findTopByEmployeeAndStatusOrderByCheckInTimeDesc(Employee employee, AttendanceLog.Status status);
     
     @Query("SELECT al FROM AttendanceLog al WHERE al.employee = :employee AND DATE(al.checkInTime) = DATE(:date)")
     Optional<AttendanceLog> findByEmployeeAndDate(@Param("employee") Employee employee, @Param("date") LocalDateTime date);

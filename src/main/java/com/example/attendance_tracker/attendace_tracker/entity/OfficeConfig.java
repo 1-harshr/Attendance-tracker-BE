@@ -21,6 +21,9 @@ public class OfficeConfig {
     private Double allowedRadius;
     
     @Column(nullable = false)
+    private Boolean gpsValidationEnabled;
+    
+    @Column(nullable = false)
     private LocalDateTime createdAt;
     
     @Column(nullable = false)
@@ -48,6 +51,9 @@ public class OfficeConfig {
     
     public Double getAllowedRadius() { return allowedRadius; }
     public void setAllowedRadius(Double allowedRadius) { this.allowedRadius = allowedRadius; }
+    
+    public Boolean getGpsValidationEnabled() { return gpsValidationEnabled; }
+    public void setGpsValidationEnabled(Boolean gpsValidationEnabled) { this.gpsValidationEnabled = gpsValidationEnabled; }
     
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
