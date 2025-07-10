@@ -1,0 +1,107 @@
+# Backend Cursor Rules - Employee Attendance Tracker
+
+## Project Context
+This is the Spring Boot backend component of the Employee Attendance Tracker system, serving REST APIs for both the Android app and web dashboard.
+
+## Backend Plan Reference
+Always reference `docs/backend-plan.md` for backend development tasks. This document contains:
+- Complete API endpoint specifications
+- Database schema design
+- Implementation steps and priorities
+- Authentication and security requirements
+
+## Core Backend MVP Features (from backend-plan.md)
+Implement these features in order:
+
+### 1. Authentication & User Management
+- Token-based authentication system
+- Employee login with ID and password
+- Admin login capabilities
+- JWT token generation and validation
+
+### 2. Employee Management APIs
+- GET /employees - List all employees (admin only)
+- POST /employees - Add new employee (admin only)  
+- GET /employees/{id} - Get employee details
+- PUT /employees/{id} - Update employee info (admin only)
+- DELETE /employees/{id} - Deactivate employee (admin only)
+
+### 3. Attendance Management APIs
+- POST /attendance/checkin - Employee check-in with location data
+- POST /attendance/checkout - Employee check-out with location data
+- GET /attendance - Get attendance records (filterable by date/employee)
+- PUT /attendance/{id} - Admin override/edit attendance
+
+### 4. Reporting APIs
+- GET /reports/attendance - Export attendance reports (Excel format)
+
+## Database Schema (PostgreSQL)
+Based on MVP requirements:
+
+### Tables:
+- **employees**: id, employee_id, name, email, password_hash, role, active, created_at, updated_at
+- **attendance_logs**: id, employee_id, check_in_time, check_out_time, check_in_location, check_out_location, distance_from_office, status, created_at, updated_at
+- **office_config**: id, office_latitude, office_longitude, allowed_radius, created_at, updated_at
+
+## Technology Stack
+- **Framework**: Spring Boot 3.5.3
+- **Database**: PostgreSQL (already configured)
+- **Authentication**: JWT tokens
+- **Dependencies**: Spring Web, Spring Data JPA, Spring Security, PostgreSQL Driver
+
+## MVP Constraints for Backend
+- Support 10-20 concurrent users maximum
+- Basic token-based authentication (no complex OAuth)
+- Simple role-based access (Employee vs Admin)
+- No shift support - single work schedule
+- No complex business logic - keep it simple
+- Focus on core CRUD operations
+
+## Development Guidelines
+- Use Spring Boot best practices but avoid over-engineering
+- Keep controllers thin, services focused
+- Use JPA repositories for data access
+- Implement basic validation and error handling
+- Return appropriate HTTP status codes
+- Use DTOs for API responses when needed
+
+## API Design Principles
+- RESTful endpoints following backend-plan.md specifications
+- Consistent JSON response format
+- Proper error handling with meaningful messages
+- Location data validation on server side
+- Secure endpoints with proper authentication checks
+
+## Security Requirements (MVP Level)
+- JWT token validation for protected endpoints
+- Password hashing (BCrypt)
+- HTTPS ready (configuration)
+- Basic input validation
+- Role-based access control (Employee vs Admin)
+
+## Future Enhancements (NOT for MVP)
+Mark these as future improvements when suggested:
+- Advanced authentication (OAuth, SSO)
+- Complex reporting and analytics
+- Audit logging
+- Advanced data validation
+- Caching mechanisms
+- Rate limiting
+- Microservices architecture
+
+## Response Strategy for Backend Tasks
+When responding to backend queries:
+1. First check if it aligns with backend-plan.md endpoints
+2. Consider MVP constraints and keep solutions simple
+3. Reference the specific API endpoint from the plan
+4. Implement using Spring Boot conventions
+5. Focus on functionality over perfect architecture
+6. Always consider both Android app and web dashboard as API consumers
+
+## Code Quality Rules
+- Write only the code requested, no extra features
+- No comments unless specifically requested
+- Use standard Spring Boot annotations and patterns
+- Keep business logic in service classes
+- Use proper exception handling
+- Follow backend-plan.md API specifications exactly 
