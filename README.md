@@ -327,10 +327,10 @@ curl -X GET http://localhost:8080/employees \
 
 ## Documentation Links
 
-- [Authentication API Contract](./auth-api-contract.md)
-- [Employee API Contract](./employee-api-contract.md)
-- [Attendance API Contract](./attendance-api-contract.md) ✅ IMPLEMENTED
-- [Backend Architecture Plan](./backend-plan.md)
+- [Authentication API Contract](./docs/auth-api-contract.md)
+- [Employee API Contract](./docs/employee-api-contract.md)
+- [Attendance API Contract](./docs/attendance-api-contract.md) ✅ IMPLEMENTED
+- [Backend Architecture Plan](./docs/backend-plan.md)
 
 ---
 
