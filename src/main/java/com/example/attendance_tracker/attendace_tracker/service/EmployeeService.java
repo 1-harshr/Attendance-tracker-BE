@@ -37,10 +37,10 @@ public class EmployeeService {
             Employee employee = new Employee();
             employee.setEmployeeId(employeeId);
             employee.setFirstName(request.getFirstName());
-            employee.setLastName(request.getLastName());
-            employee.setEmail(request.getEmail());
+            employee.setLastName(StringUtils.hasText(request.getLastName()) ? request.getLastName() : null);
+            employee.setEmail(StringUtils.hasText(request.getEmail()) ? request.getEmail() : null);
             employee.setPhone(request.getPhone());
-            employee.setAddress(request.getAddress());
+            employee.setAddress(StringUtils.hasText(request.getAddress()) ? request.getAddress() : null);
             employee.setPasswordHash(passwordEncoder.encode(request.getPassword()));
             
             String role = StringUtils.hasText(request.getRole()) ? request.getRole().toUpperCase() : "EMPLOYEE";
@@ -123,16 +123,16 @@ public class EmployeeService {
                 employee.setFirstName(request.getFirstName());
             }
             if (request.getLastName() != null) {
-                employee.setLastName(request.getLastName());
+                employee.setLastName(StringUtils.hasText(request.getLastName()) ? request.getLastName() : null);
             }
             if (request.getEmail() != null) {
-                employee.setEmail(request.getEmail());
+                employee.setEmail(StringUtils.hasText(request.getEmail()) ? request.getEmail() : null);
             }
             if (StringUtils.hasText(request.getPhone())) {
                 employee.setPhone(request.getPhone());
             }
             if (request.getAddress() != null) {
-                employee.setAddress(request.getAddress());
+                employee.setAddress(StringUtils.hasText(request.getAddress()) ? request.getAddress() : null);
             }
             if (StringUtils.hasText(request.getPassword())) {
                 employee.setPasswordHash(passwordEncoder.encode(request.getPassword()));
