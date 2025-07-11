@@ -35,24 +35,16 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         
-        // Allow requests from React dev server
-        configuration.setAllowedOrigins(Arrays.asList(
-            "http://localhost:3000",
-            "http://127.0.0.1:3000"
-        ));
+        configuration.setAllowedOrigins(Arrays.asList("*"));
         
-        // Allow all HTTP methods
         configuration.setAllowedMethods(Arrays.asList(
             "GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD"
         ));
         
-        // Allow all headers
         configuration.setAllowedHeaders(Arrays.asList("*"));
         
-        // Allow credentials (for JWT tokens)
-        configuration.setAllowCredentials(true);
+        configuration.setAllowCredentials(false);
         
-        // Cache preflight response for 1 hour
         configuration.setMaxAge(3600L);
         
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
