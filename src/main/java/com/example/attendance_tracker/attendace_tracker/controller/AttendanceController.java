@@ -17,7 +17,7 @@ public class AttendanceController {
     @Autowired
     private AttendanceService attendanceService;
     
-    @PostMapping("/checkin")
+    @PostMapping("/check-in")
     @PreAuthorize("hasRole('EMPLOYEE') or hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<CheckInResponse>> checkIn(@Valid @RequestBody CheckInRequest request, Authentication authentication) {
         String employeeId = authentication.getName();
@@ -30,7 +30,7 @@ public class AttendanceController {
         }
     }
     
-    @PostMapping("/checkout")
+    @PostMapping("/check-out")
     @PreAuthorize("hasRole('EMPLOYEE') or hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<CheckOutResponse>> checkOut(@Valid @RequestBody CheckOutRequest request, Authentication authentication) {
         String employeeId = authentication.getName();
@@ -46,11 +46,24 @@ public class AttendanceController {
     @GetMapping("/my-records")
     @PreAuthorize("hasRole('EMPLOYEE') or hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<AttendanceListResponse>> getMyAttendance(
-            @RequestParam(required = false) Long startDate,
-            @RequestParam(required = false) Long endDate,
+            @RequestParam(required = false) String startDate,
+            @RequestParam(required = false) String endDate,
             Authentication authentication) {
         String employeeId = authentication.getName();
-        ApiResponse<AttendanceListResponse> response = attendanceService.getMyAttendance(employeeId, startDate, endDate);
+        ApiResponse<AttendanceListResponse> response = attendanceService.getMyAttendanceByDateString(employeeId, startDate, endDate);
+        
+        if (response.isSuccess()) {
+            return ResponseEntity.ok(response);
+        } else {
+            return ResponseEntity.status(400).body(response);
+        }
+    }
+    
+    @GetMapping("/today")
+    @PreAuthorize("hasRole('EMPLOYEE') or hasRole('ADMIN')")
+    public ResponseEntity<ApiResponse<AttendanceRecordResponse>> getTodayRecord(Authentication authentication) {
+        String employeeId = authentication.getName();
+        ApiResponse<AttendanceRecordResponse> response = attendanceService.getTodayRecord(employeeId);
         
         if (response.isSuccess()) {
             return ResponseEntity.ok(response);
@@ -111,7 +124,7 @@ public class AttendanceController {
     }
     
     @GetMapping("/gps-config")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('EMPLOYEE') or hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<GpsConfigResponse>> getGpsConfig() {
         ApiResponse<GpsConfigResponse> response = attendanceService.getGpsConfig();
         

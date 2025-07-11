@@ -13,8 +13,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.time.Instant;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -113,6 +115,56 @@ public class AttendanceService {
             
         } catch (Exception e) {
             return ApiResponse.error("CHECK_OUT_ERROR", "Error during check-out: " + e.getMessage());
+        }
+    }
+    
+    public ApiResponse<AttendanceListResponse> getMyAttendanceByDateString(String employeeId, String startDate, String endDate) {
+        try {
+            Long startTimestamp = null;
+            Long endTimestamp = null;
+            
+            if (startDate != null && !startDate.trim().isEmpty()) {
+                LocalDate startLocalDate = LocalDate.parse(startDate, DateTimeFormatter.ISO_LOCAL_DATE);
+                startTimestamp = startLocalDate.atStartOfDay().toEpochSecond(ZoneOffset.UTC);
+            }
+            
+            if (endDate != null && !endDate.trim().isEmpty()) {
+                LocalDate endLocalDate = LocalDate.parse(endDate, DateTimeFormatter.ISO_LOCAL_DATE);
+                endTimestamp = endLocalDate.atTime(23, 59, 59).toEpochSecond(ZoneOffset.UTC);
+            }
+            
+            return getMyAttendance(employeeId, startTimestamp, endTimestamp);
+            
+        } catch (Exception e) {
+            return ApiResponse.error("DATE_PARSING_ERROR", "Error parsing dates: " + e.getMessage());
+        }
+    }
+    
+    public ApiResponse<AttendanceRecordResponse> getTodayRecord(String employeeId) {
+        try {
+            Optional<Employee> employeeOpt = employeeRepository.findByEmployeeId(employeeId);
+            if (employeeOpt.isEmpty() || !employeeOpt.get().getActive()) {
+                return ApiResponse.error("EMPLOYEE_NOT_FOUND", "Employee not found or inactive");
+            }
+            Employee employee = employeeOpt.get();
+            
+            LocalDate today = LocalDate.now();
+            LocalDateTime startOfDay = today.atStartOfDay();
+            LocalDateTime endOfDay = today.atTime(23, 59, 59);
+            
+            List<AttendanceLog> todayLogs = attendanceLogRepository
+                .findByEmployeeAndCheckInTimeBetweenOrderByCheckInTimeDesc(employee, startOfDay, endOfDay);
+            
+            if (todayLogs.isEmpty()) {
+                return ApiResponse.success(null);
+            }
+            
+            AttendanceLog todayLog = todayLogs.get(0);
+            AttendanceRecordResponse response = new AttendanceRecordResponse(todayLog, false);
+            return ApiResponse.success(response);
+            
+        } catch (Exception e) {
+            return ApiResponse.error("TODAY_RECORD_ERROR", "Error retrieving today's record: " + e.getMessage());
         }
     }
     
